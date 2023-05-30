@@ -270,12 +270,12 @@ fun Form() {
     val diplomaPune : List<String> = listOf("")
     val diplomaJuhu : List<String> = listOf("")
 
-    val phdProgrammes = phdChurchgate.union(phdJuhu).union(phdPune).distinct()
-    val bachelorProgrammes = bachelorChurchgate.union(bachelorJuhu).union(bachelorPune).distinct()
-    val masterProgrammes = masterChurchgate.union(masterJuhu).union(masterPune).distinct()
-    val pgdProgrammes = pgdChurchgate.union(pgdJuhu).union(pgdPune).distinct()
-    val certProgrammes = certChurchgate.union(certJuhu).union(certPune).distinct()
-    val diplomaProgrammes = diplomaChurchgate.union(diplomaJuhu).union(diplomaPune).distinct()
+    val phdProgrammes = phdChurchgate.union(phdJuhu).union(phdPune).distinct().sorted()
+    val bachelorProgrammes = bachelorChurchgate.union(bachelorJuhu).union(bachelorPune).distinct().sorted()
+    val masterProgrammes = masterChurchgate.union(masterJuhu).union(masterPune).distinct().sorted()
+    val pgdProgrammes = pgdChurchgate.union(pgdJuhu).union(pgdPune).distinct().sorted()
+    val certProgrammes = certChurchgate.union(certJuhu).union(certPune).distinct().sorted()
+    val diplomaProgrammes = diplomaChurchgate.union(diplomaJuhu).union(diplomaPune).distinct().sorted()
 
 
 
