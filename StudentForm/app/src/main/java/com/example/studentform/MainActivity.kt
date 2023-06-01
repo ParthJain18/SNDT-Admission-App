@@ -1,13 +1,17 @@
 package com.example.studentform
 
 import android.content.ContentValues.TAG
+import android.content.Intent
+import android.graphics.drawable.shapes.Shape
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,24 +22,25 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DividerDefaults.color
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -46,21 +51,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.studentform.ui.theme.StudentFormTheme
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.selects.select
 
 
 class MainActivity : ComponentActivity() {
@@ -73,7 +77,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Form()
+                    MyApp()
                 }
             }
         }
@@ -81,6 +85,7 @@ class MainActivity : ComponentActivity() {
 }
 
 
+data class campusClass(val name: String, val contactNum: Long, val additionalData: String)
 
 fun saveDataToFirebase(data1: String, data2: String, data3: String, data4: String) {
     println("Clicked")
@@ -103,10 +108,24 @@ fun saveDataToFirebase(data1: String, data2: String, data3: String, data4: Strin
 
 }
 
+@Composable
+fun MyApp() {
+    val navController = rememberNavController()
+
+    NavHost(navController, startDestination = "screen1") {
+        composable("screen1") {
+            Screen1(onNavigate = { navController.navigate("screen2") })
+        }
+        composable("screen2") {
+            Screen2()
+        }
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Form() {
+fun Screen1(onNavigate: () -> Unit) {
 
     val name = remember { mutableStateOf(TextFieldValue()) }
     val contactNum = remember { mutableStateOf(TextFieldValue()) }
@@ -186,7 +205,7 @@ fun Form() {
         ,"Master of Education (M.Ed)"
         ,"Master of Library and Information Science (M L. I.S)"
         ,"Master of Social Work (MSW)"
-        ,"Master of Science (M. Sc. - Nursing)"
+        ,"Master of Science (M. Sc. - Nursing)"
     )
 
     val masterJuhu = listOf("Master of Arts (M.A - Women Studies)"
@@ -318,20 +337,26 @@ fun Form() {
         TextField(
             value = name.value,
             onValueChange = { name.value = it },
-            Modifier.padding(all = 10.dp).fillMaxWidth(),
+            Modifier
+                .padding(all = 10.dp)
+                .fillMaxWidth(),
             maxLines = 1,
             label = {Text("Name")}
             )
         TextField(
             value = contactNum.value,
             onValueChange = { contactNum.value = it },
-            Modifier.padding(all = 10.dp).fillMaxWidth(),
+            Modifier
+                .padding(all = 10.dp)
+                .fillMaxWidth(),
             label = {Text("Contact Number")}
         )
         TextField(
             value = email.value,
             onValueChange = { email.value = it },
-            Modifier.padding(all = 10.dp).fillMaxWidth(),
+            Modifier
+                .padding(all = 10.dp)
+                .fillMaxWidth(),
             label = {Text("Email")}
         )
 
@@ -350,7 +375,9 @@ fun Form() {
                          readOnly = true,
                          trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded1) },
                          colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                         modifier = Modifier.menuAnchor().fillMaxWidth(),
+                         modifier = Modifier
+                             .menuAnchor()
+                             .fillMaxWidth(),
                         maxLines = 1,
                          placeholder = { Text("Choose Programme")}
                     )
@@ -397,7 +424,9 @@ fun Form() {
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded2) },
                     colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                    modifier = Modifier.menuAnchor().fillMaxWidth(),
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
                     placeholder = { Text("Choose Course")},
                     maxLines = 1,
                     enabled = secondList.isNotEmpty()
@@ -426,6 +455,7 @@ fun Form() {
 
         Button(
             onClick = {
+
                 text1 = name.value.text
                 text2 = contactNum.value.text
                 text3 = selectedProgramme
@@ -434,6 +464,7 @@ fun Form() {
 
 
                 saveDataToFirebase(text1, text2, text3, text4)
+                onNavigate()
             },
             modifier = Modifier.padding(top = 30.dp)
         ) {
@@ -445,11 +476,88 @@ fun Form() {
 }
 
 
+@Composable
+fun Screen2() {
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
+
+    Column(
+        modifier = Modifier.padding(all = 10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    )
+    {
+        var campuses = listOf(campusClass("Churchgate", 9909909900, "www.ssadsdasdadasdadadasdasdadasdasda.com"), campusClass("Churchgate 2", 9909909900, "www.ssadsdasdadasdadadasdasdadasdasdasadasdakbljnfeih goirhgurghourghaough rgrgha;ighrjgrig.com"))
+        campuses.forEach { campus ->
+            Box(
+                modifier = Modifier.padding(10.dp)
+                    .clickable {   val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://google.com"))
+                        launcher.launch(intent) }
+                    .border(1.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
+                ,
+                contentAlignment = Alignment.TopCenter,
+                propagateMinConstraints = true,
+
+            ) {
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 10.dp, bottom = 10.dp, start = 5.dp, end = 5.dp)
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+
+                        Text(
+                            text = campus.name,
+                            fontSize = 25.sp,
+                            modifier = Modifier
+                                .padding(start = 0.dp),
+                            textAlign = TextAlign.Left,
+                        )
+                        Text(
+                            text = campus.contactNum.toString(),
+                            fontSize = 15.sp,
+                            modifier = Modifier
+                                .padding(start = 5.dp, top = 10.dp),
+                            textAlign = TextAlign.Left,
+                        )
+                        Text(
+                            text = campus.additionalData,
+                            fontSize = 20.sp,
+                            modifier = Modifier
+                                .padding(start = 3.dp, top = 5.dp),
+                            textAlign = TextAlign.Left,
+                            softWrap = true
+
+                        )
+                    }
+
+                    IconButton(onClick = {},
+                        modifier = Modifier.padding(0.dp).width(30.dp).height(30.dp)
+
+
+                        ){
+                            Icon(
+                                imageVector = Icons.Filled.KeyboardArrowRight,
+                                contentDescription = "",
+                                tint = Color.Gray,
+                                modifier = Modifier.padding(0.dp)
+                            )
+
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+}
+//vararg campuses : String
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     StudentFormTheme {
-        Form()
+        MyApp()
     }
 }
