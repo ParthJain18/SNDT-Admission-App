@@ -2,6 +2,8 @@ package com.example.studentform
 
 import android.content.ContentValues.TAG
 import android.content.Intent
+import android.graphics.Color.rgb
+import android.graphics.Paint
 import android.graphics.drawable.shapes.Shape
 import android.net.Uri
 import android.os.Bundle
@@ -13,6 +15,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,14 +31,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -311,16 +320,19 @@ fun Screen1(onNavigate: () -> Unit) {
         Icons.Filled.KeyboardArrowUp}else{
         Icons.Filled.KeyboardArrowDown
     }
+    var offset by remember { mutableStateOf(0f) }
 
 
 
 
-
-
-    Column (modifier = Modifier.padding(all = 10.dp),
+    Column(
+        modifier = Modifier
+            .padding(all = 10.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ){
+        verticalArrangement = Arrangement.Center,
+
+        ){
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription ="header",
@@ -330,9 +342,10 @@ fun Screen1(onNavigate: () -> Unit) {
                 .height(120.dp)
         )
         Text(
-            text = "Admission Details",
-            Modifier.padding(all = 10.dp),
-            fontSize = 30.sp
+            text = "Your Contact and Course Details:",
+            Modifier.padding(start = 15.dp, end = 10.dp, top = 10.dp). fillMaxWidth(),
+            fontSize = 17.sp,
+            textAlign = TextAlign.Left
         )
         TextField(
             value = name.value,
@@ -378,13 +391,14 @@ fun Screen1(onNavigate: () -> Unit) {
                          modifier = Modifier
                              .menuAnchor()
                              .fillMaxWidth(),
-                        maxLines = 1,
+                         singleLine = true,
                          placeholder = { Text("Choose Programme")}
                     )
 
                     ExposedDropdownMenu(
                         expanded = expanded1,
-                        onDismissRequest = { expanded1 = false }) {
+                        onDismissRequest = { expanded1 = false }
+                    ) {
                         programmes.forEachIndexed { index, degree ->
                             DropdownMenuItem(
                                 onClick = {
@@ -442,6 +456,7 @@ fun Screen1(onNavigate: () -> Unit) {
                                 selectedCourse = item
                                 expanded2 = false
                             },
+                            modifier = Modifier.fillMaxWidth(),
                             text = { Text(text = item) }
                         )
                     }
@@ -466,10 +481,22 @@ fun Screen1(onNavigate: () -> Unit) {
                 saveDataToFirebase(text1, text2, text3, text4)
                 onNavigate()
             },
-            modifier = Modifier.padding(top = 30.dp)
+            modifier = Modifier.padding(top = 30.dp),
+            colors = ButtonDefaults.buttonColors(Color(0, 0, 153))
         ) {
-            Text(text = "Click")
+            Text(text = "CONTINUE",
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                )
         }
+        Text(
+            text = "Your responses will be recorded for further contact purpose.",
+            fontSize = 12.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 5.dp).width(275.dp),
+            lineHeight = 13.sp,
+            color = Color.Gray
+
+        )
 
 
     }
@@ -489,9 +516,12 @@ fun Screen2() {
         var campuses = listOf(campusClass("Churchgate", 9909909900, "www.ssadsdasdadasdadadasdasdadasdasda.com"), campusClass("Churchgate 2", 9909909900, "www.ssadsdasdadasdadadasdasdadasdasdasadasdakbljnfeih goirhgurghourghaough rgrgha;ighrjgrig.com"))
         campuses.forEach { campus ->
             Box(
-                modifier = Modifier.padding(10.dp)
-                    .clickable {   val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://google.com"))
-                        launcher.launch(intent) }
+                modifier = Modifier
+                    .padding(10.dp)
+                    .clickable {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://google.com"))
+                        launcher.launch(intent)
+                    }
                     .border(1.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
                 ,
                 contentAlignment = Alignment.TopCenter,
@@ -531,7 +561,10 @@ fun Screen2() {
                     }
 
                     IconButton(onClick = {},
-                        modifier = Modifier.padding(0.dp).width(30.dp).height(30.dp)
+                        modifier = Modifier
+                            .padding(0.dp)
+                            .width(30.dp)
+                            .height(30.dp)
 
 
                         ){
@@ -558,6 +591,6 @@ fun Screen2() {
 @Composable
 fun GreetingPreview() {
     StudentFormTheme {
-        MyApp()
+        Screen1({})
     }
 }
