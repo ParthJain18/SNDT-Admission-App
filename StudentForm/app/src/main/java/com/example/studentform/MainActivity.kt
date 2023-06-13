@@ -2,41 +2,30 @@ package com.example.studentform
 
 import android.content.ContentValues.TAG
 import android.content.Intent
-import android.graphics.Color.rgb
-import android.graphics.Paint
-import android.graphics.drawable.shapes.Shape
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.ScrollableState
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -48,7 +37,6 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -60,7 +48,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -94,7 +81,11 @@ class MainActivity : ComponentActivity() {
 }
 
 
-data class campusClass(val name: String, val contactNum: Long, val additionalData: String)
+
+var campuses = mutableListOf(ChurchCampus, JuhuCampus, PuneCampus)
+
+
+
 
 fun saveDataToFirebase(data1: String, data2: String, data3: String, data4: String) {
     println("Clicked")
@@ -126,7 +117,7 @@ fun MyApp() {
             Screen1(onNavigate = { navController.navigate("screen2") })
         }
         composable("screen2") {
-            Screen2()
+            Screen2(onBack = { navController.navigateUp() })
         }
     }
 }
@@ -148,155 +139,8 @@ fun Screen1(onNavigate: () -> Unit) {
     var secondList : MutableList<String> = remember { mutableListOf()}
 
 
-
-    val campus = listOf("Juhu Campus", "Churchgate Campus", "Pune Campus")
-    val ListJuhu = listOf("Department of Extension & Communication","Department of Educational Technology","Department of Special Education", "Department of Human Development", "Department of Food Science & Nutrition", "Department of Family Resource Management", "Department of Textile Science and Apparel Design", "Department of Computer Science", "Department of Education Management", "C U Shah College of Pharmacy", "SHPT College of Science - Department of Analytical Chemistry")
     val programmes = listOf("Ph.D.","Master Degree","Degree","P.G.Diploma","Diploma","Certificate")
-    val phdChurchgate = listOf("Ph.D in Dept. of Marathi"
-        ,"Ph.D in Dept. of English"
-        ,"Ph.D in Dept. of Hindi"
-        ,"Ph.D in Dept. of Sanskrit"
-        ,"Ph.D in Dept. of Gujarati"
-        ,"Ph.D in Dept. of History"
-        ,"Ph.D in Dept. of Psychology"
-        ,"Ph.D in Dept. of Sociology"
-        ,"Ph.D in Dept. of Political Science"
-        ,"Ph.D in Dept. of Economics"
-        ,"Ph.D in Dept. of Social work"
-        ,"Ph.D in Dept. of Lifelong Learning & Extension"
-        ,"Ph.D in S.H.P.T. School of Library Science"
-        ,"Ph.D in Dept. of Education"
-        ,"Ph.D in L.T College of Nursing"
-        ,"Ph.D in Dept. of Music"
-        ,"Ph.D in Dept. of Commerce"
-    )
-    val phdJuhu = listOf("Ph.D in Dept. of Food Science & Nutrition"
-        ,"Ph.D in Dept. of Family Resource Management"
-        ,"Ph.D in Research Centre for Women's Studies"
-        ,"Ph.D in S.H.P.T. School of Science - Analytical chemistry"
-        ,"Ph.D in C.U.Shah College of Pharmacy"
-        ,"Ph.D in Dept. of Educational Technology"
-        ,"Ph.D in Dept. of Computer Science"
-        ,"Ph.D in Usha Mittal Institute of Technology"
-        ,"Ph.D in JankiDevi Bajaj Institute of Management Studies"
-        ,"Ph.D in Dept. of Education Management"
-        ,"Ph.D in Dept. of Human Development"
-        ,"Ph.D in Dept of Special Education"
-        ,"Ph.D in Dept of Extension & Communication"
-        ,"Ph.D in SNDTWU Law School"
-        ,"Ph.D in Textile Science & Apparel Design")
-    val phdPune = listOf("Ph.D in Dept. of Marathi"
-        ,"Ph.D in Dept. of Hindi"
-        ,"Ph.D in Dept. of Psychology"
-        ,"Ph.D in Dept. of Economics"
-        ,"Ph.D in Dept. of Geography"
-        ,"Ph.D in Dept. of Music"
-        ,"Ph.D in Dept. of Commerce"
-        ,"Ph.D in Dept. of Drawing and Painting"
-    )
-    val masterChurchgate = listOf("Master of Arts (M.A. - Marathi)"
-        ,"Master of Arts (M.A. - Hindi)"
-        ,"Master of Arts (M.A. - Gujarati)"
-        ,"Master of Arts (M.A. - Sanskrit)"
-        ,"Master of Arts (M.A. - English)"
-        ,"Master of Arts (M.A. - Music)"
-        ,"Master of Visual Arts (M.V.A. - Creative Painting)"
-        ,"Master of Visual Arts (M.V.A. - Portraiture Painting)"
-        ,"Master of Visual Arts (M.V.A. - Mural Painting)"
-        ,"Master of Arts (M.A. - Economics)"
-        ,"Master of Arts (M.A. - History)"
-        ,"Master of Arts (M.A. - Sociology)"
-        ,"Master of Arts (M.A. - Political Science)"
-        ,"Master of Arts (M.A. - Psychology)"
-        ,"Master of Arts (M.A. - Non Formal Education and Development)"
-        ,"Master of Commerce (M Com)"
-        ,"Master of Arts (M A - Education)"
-        ,"Master of Education (M.Ed)"
-        ,"Master of Library and Information Science (M L. I.S)"
-        ,"Master of Social Work (MSW)"
-        ,"Master of Science (M. Sc. - Nursing)"
-    )
 
-    val masterJuhu = listOf("Master of Arts (M.A - Women Studies)"
-        ,"Master of Science (M Sc. - Food Science and Nutrition)"
-        ,"Master of Science (M.Sc. - Clinical Nutrition & Dietetics)"
-        ,"Master of Science (M.Sc. - Resource Management and Ergonomics)"
-        ,"Master of Science (M Sc. - Extension & Communication)"
-        ,"Master of Arts in Media and Communication"
-        ,"Master of Science (M Sc. - Human Development)"
-        ,"Master of Science ( M.Sc. - Early Childhood Education)"
-        ,"Master of Science (M Sc. - Textile Science and Apparel Design)"
-        ,"Master of Education (M. Ed. Special Education: Intellectual Disability)"
-        ,"Master of Education (M. Ed. Special Education: Learning Disability)"
-        ,"Master of Education (M. Ed. Special Education: Visual Impairment)"
-        ,"Master of Arts (M.A. eLearning)"
-        ,"Master of Arts (M.Sc. eLearning)"
-        ,"Master of Education Management (MEM)"
-        ,"Master of Business Administration (MBA - Human Resource Management)"
-        ,"Master of Business Administration (MBA - Marketing Management)"
-        ,"Master of Business Administration (MBA - Finance Management)"
-        ,"Master of Management Studies (MMS: HR, Finance, Marketing operations)"
-        ,"Master of Law (LLM): 2 years"
-        ,"Master of Science (M. Sc. : Analytical Chemistry)"
-        ,"Master of Pharmacy (M. Pharm. : Pharmaceutics)"
-        ,"Master of Pharmacy (M. Pharm. Quality Assurance)"
-        ,"Master of Pharmacy (M.Pharm: Phytopharmacy and Phytomedicine)"
-        ,"Master of Technology (M. Tech.: Computer Science and Technology)"
-        ,"Master of Technology (M. Tech.: Electronics and Communication)"
-        ,"Master of Computer Applications (MCA)"
-        ,"Master of Science (M. Sc.) in Computer Science"
-        ,"Master of Science (M.Sc. - Resource Management and Interior Design)")
-    val masterPune = listOf("Master of Arts (M.A. - Marathi)"
-        , "Master of Arts (M.A. - Hindi)"
-        , "Master of Arts (M.A. - Music)"
-        , "Master of Visual Arts (M.V.A. - Creative Painting)"
-        , "Master of Visual Arts (M.V.A. - Portraiture Painting)"
-        , "Master of Visual Arts (M.V.A. - Mural Painting)"
-        , "Master of Arts (M.A. - Geography)"
-        , "Master of Arts (M.A. - Economics)"
-        , "Master of Arts (M.A. - Psychology)"
-        , "Master of Commerce (M. Com)"
-        , "Master of Science (M Sc.: Communication Media for Children)"
-        , "Master of Science (M Sc.: Nutrition and health communication)"
-        , "Master of Arts in Media and Communication"
-    )
-    val bachelorChurchgate = listOf("Bachelor of Science (B.Sc. Nursing)")
-    val bachelorJuhu = listOf("Bachelor of Education (B.Ed Special Education: Intellectual Disability)"
-        ,"Bachelor of Education (B.Ed Special Education: Learning Disability)"
-        ,"Bachelor of Education (B.Ed Special Education: Visual Impairment)"
-        ,"Bachelor of Pharmacy"
-        ,"Bachelor of Technology (B.Tech. - Computer Science & Technology)"
-        ,"Bachelor of Technology (B.Tech. - Electronics Engineering)"
-        ,"Bachelor of Technology (B.Tech. - Electronics & Telecommunication)"
-        ,"Bachelor of Technology (B.Tech. - Information Technology)"
-        ,"Bachelor of Business Administration and Bachelor of Law"
-        ,"Bachelor of Law"
-        ,"Bachelor of Vocation (Jewellery Design and Manufacture)"
-        ,"Bachelor of Vocation (Optometry)"
-        ,"Bachelor of Vocation (Interior Design)"
-        ,"Bachelor of Vocation (Food Processing Technology)"
-        ,"Bachelor of Vocation (Fashion Design)"
-    )
-    val bachelorPune : List<String> = listOf("")
-    val pgdChurchgate = listOf("Post Graduate Diploma in Travel and Tourism")
-    val pgdJuhu = listOf("Post Graduate Diploma in Computer Science and Applications"
-        ,"Post Graduate Diploma in Dietetics"
-        ,"Post Graduate Diploma in Early Childhood Education"
-        ,"Post Graduate Diploma in Education Management"
-        ,"Post Graduate Diploma in Human Resource Management"
-        ,"Post Graduate Diploma in Management of Learning Disabilities"
-        ,"Post Graduate Diploma in Nutrition Food Processing and Technology"
-        ,"Post Graduate Diploma in Quality Assurance in Apparel Industry"
-        ,"Post Graduate Diploma in Apparel Merchandizing and Management"
-    )
-    val pgdPune : List<String> = listOf("")
-    val certJuhu = listOf("Certificate course in Shadow Teaching"
-    )
-    val certChurchgate : List<String> = listOf("")
-    val certPune : List<String> = listOf("")
-    val diplomaChurchgate : List<String> = listOf("")
-    val diplomaPune : List<String> = listOf("")
-    val diplomaJuhu : List<String> = listOf("")
 
     val phdProgrammes = phdChurchgate.union(phdJuhu).union(phdPune).distinct().sorted()
     val bachelorProgrammes = bachelorChurchgate.union(bachelorJuhu).union(bachelorPune).distinct().sorted()
@@ -316,11 +160,7 @@ fun Screen1(onNavigate: () -> Unit) {
 
     var expanded1 by remember { mutableStateOf(false) }
     var expanded2 by remember { mutableStateOf(false) }
-    val icon = if (expanded1) {
-        Icons.Filled.KeyboardArrowUp}else{
-        Icons.Filled.KeyboardArrowDown
-    }
-    var offset by remember { mutableStateOf(0f) }
+
 
 
 
@@ -343,7 +183,9 @@ fun Screen1(onNavigate: () -> Unit) {
         )
         Text(
             text = "Your Contact and Course Details:",
-            Modifier.padding(start = 15.dp, end = 10.dp, top = 10.dp). fillMaxWidth(),
+            Modifier
+                .padding(start = 15.dp, end = 10.dp, top = 10.dp)
+                .fillMaxWidth(),
             fontSize = 17.sp,
             textAlign = TextAlign.Left
         )
@@ -466,8 +308,6 @@ fun Screen1(onNavigate: () -> Unit) {
         }
 
 
-
-
         Button(
             onClick = {
 
@@ -476,6 +316,55 @@ fun Screen1(onNavigate: () -> Unit) {
                 text3 = selectedProgramme
                 text4 = selectedCourse
 
+                var coursesJuhu : List<String> = listOf("")
+                var coursesChurch : List<String> = listOf("")
+                var coursesPune : List<String> = listOf("")
+
+//"Ph.D.","Master Degree","Degree","P.G.Diploma","Diploma","Certificate"
+                campuses.clear()
+                when (selectedProgramme){
+                    "Ph.D." -> {
+                        coursesJuhu = JuhuCampus.phdList
+                        coursesChurch = ChurchCampus.phdList
+                        coursesPune = PuneCampus.phdList
+                    }
+                    "Master Degree" -> {
+                        coursesJuhu = JuhuCampus.masterList
+                        coursesChurch = ChurchCampus.masterList
+                        coursesPune = PuneCampus.masterList
+                    }
+                    "Degree" -> {
+                        coursesJuhu = JuhuCampus.degreeList
+                        coursesChurch = ChurchCampus.degreeList
+                        coursesPune = PuneCampus.degreeList
+                    }
+                    "P.G.Diploma" -> {
+                        coursesJuhu = JuhuCampus.pgdList
+                        coursesChurch = ChurchCampus.pgdList
+                        coursesPune = PuneCampus.pgdList
+                    }
+                    "Diploma" -> {
+                        coursesJuhu = JuhuCampus.diplomaList
+                        coursesChurch = ChurchCampus.diplomaList
+                        coursesPune = PuneCampus.diplomaList
+                    }
+                    "Certificate" -> {
+                        coursesJuhu = JuhuCampus.certList
+                        coursesChurch = ChurchCampus.certList
+                        coursesPune = PuneCampus.certList
+                    }
+
+                }
+
+                if (selectedCourse in coursesJuhu) {
+                    campuses.add(JuhuCampus)
+                }
+                if (selectedCourse in coursesChurch) {
+                    campuses.add(ChurchCampus)
+                }
+                if (selectedCourse in coursesPune) {
+                    campuses.add(PuneCampus)
+                }
 
 
                 saveDataToFirebase(text1, text2, text3, text4)
@@ -492,7 +381,9 @@ fun Screen1(onNavigate: () -> Unit) {
             text = "Your responses will be recorded for further contact purpose.",
             fontSize = 12.sp,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 5.dp).width(275.dp),
+            modifier = Modifier
+                .padding(top = 5.dp)
+                .width(275.dp),
             lineHeight = 13.sp,
             color = Color.Gray
 
@@ -504,36 +395,43 @@ fun Screen1(onNavigate: () -> Unit) {
 
 
 @Composable
-fun Screen2() {
+fun Screen2(onBack: () -> Unit ) {
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
-
+    BackHandler {
+        onBack()
+    }
     Column(
-        modifier = Modifier.padding(all = 10.dp),
+        modifier = Modifier
+            .padding(all = 10.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     )
     {
-        var campuses = listOf(campusClass("Churchgate", 9909909900, "www.ssadsdasdadasdadadasdasdadasdasda.com"), campusClass("Churchgate 2", 9909909900, "www.ssadsdasdadasdadadasdasdadasdasdasadasdakbljnfeih goirhgurghourghaough rgrgha;ighrjgrig.com"))
         campuses.forEach { campus ->
             Box(
                 modifier = Modifier
                     .padding(10.dp)
                     .clickable {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://google.com"))
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(campus.url))
                         launcher.launch(intent)
                     }
-                    .border(1.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
-                ,
+                    .border(1.dp, Color.Gray, shape = RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.TopCenter,
                 propagateMinConstraints = true,
 
-            ) {
+                ) {
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(top = 10.dp, bottom = 10.dp, start = 5.dp, end = 5.dp)
+                    modifier = Modifier.padding(
+                        top = 10.dp,
+                        bottom = 10.dp,
+                        start = 5.dp,
+                        end = 5.dp
+                    )
                 ) {
-                    Column(modifier = Modifier.weight(1f)) {
+                    Column(modifier = Modifier.weight(1f).padding(start = 10.dp)) {
 
                         Text(
                             text = campus.name,
@@ -543,15 +441,15 @@ fun Screen2() {
                             textAlign = TextAlign.Left,
                         )
                         Text(
-                            text = campus.contactNum.toString(),
+                            text = campus.contactNum,
                             fontSize = 15.sp,
                             modifier = Modifier
                                 .padding(start = 5.dp, top = 10.dp),
                             textAlign = TextAlign.Left,
                         )
                         Text(
-                            text = campus.additionalData,
-                            fontSize = 20.sp,
+                            text = campus.address,
+                            fontSize = 14.sp,
                             modifier = Modifier
                                 .padding(start = 3.dp, top = 5.dp),
                             textAlign = TextAlign.Left,
@@ -559,38 +457,26 @@ fun Screen2() {
 
                         )
                     }
-
-                    IconButton(onClick = {},
-                        modifier = Modifier
-                            .padding(0.dp)
-                            .width(30.dp)
-                            .height(30.dp)
-
-
-                        ){
-                            Icon(
-                                imageVector = Icons.Filled.KeyboardArrowRight,
-                                contentDescription = "",
-                                tint = Color.Gray,
-                                modifier = Modifier.padding(0.dp)
-                            )
-
+                    Icon(
+                            imageVector = Icons.Filled.KeyboardArrowRight,
+                            contentDescription = "",
+                            tint = Color.Gray,
+                            modifier = Modifier.padding(10.dp)
+                        )
                     }
                 }
             }
         }
-    }
-
 
 
 
 }
-//vararg campuses : String
+
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     StudentFormTheme {
-        Screen1({})
+        Screen2 {}
     }
 }
