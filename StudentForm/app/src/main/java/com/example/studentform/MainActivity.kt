@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -26,9 +27,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -36,7 +35,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -49,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -136,24 +135,7 @@ fun Screen1(onNavigate: () -> Unit) {
     var text3 = " "
     var text4 = " "
 
-    var secondList : MutableList<String> = remember { mutableListOf()}
-
-
-    val programmes = listOf("Ph.D.","Master Degree","Degree","P.G.Diploma","Diploma","Certificate")
-
-
-    val phdProgrammes = phdChurchgate.union(phdJuhu).union(phdPune).distinct().sorted()
-    val bachelorProgrammes = bachelorChurchgate.union(bachelorJuhu).union(bachelorPune).distinct().sorted()
-    val masterProgrammes = masterChurchgate.union(masterJuhu).union(masterPune).distinct().sorted()
-    val pgdProgrammes = pgdChurchgate.union(pgdJuhu).union(pgdPune).distinct().sorted()
-    val certProgrammes = certChurchgate.union(certJuhu).union(certPune).distinct().sorted()
-    val diplomaProgrammes = diplomaChurchgate.union(diplomaJuhu).union(diplomaPune).distinct().sorted()
-
-
-
-
-
-
+    val secondList : MutableList<String> = remember { mutableListOf()}
 
     var selectedProgramme by remember { mutableStateOf("") }
     var selectedCourse by remember { mutableStateOf("") }
@@ -166,6 +148,7 @@ fun Screen1(onNavigate: () -> Unit) {
 
 
     Column(
+
         modifier = Modifier
             .padding(all = 10.dp)
             .verticalScroll(rememberScrollState()),
@@ -173,6 +156,9 @@ fun Screen1(onNavigate: () -> Unit) {
         verticalArrangement = Arrangement.Center,
 
         ){
+
+        val context = LocalContext.current
+
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription ="header",
@@ -198,6 +184,7 @@ fun Screen1(onNavigate: () -> Unit) {
             maxLines = 1,
             label = {Text("Name")}
             )
+
         TextField(
             value = contactNum.value,
             onValueChange = { contactNum.value = it },
@@ -308,6 +295,7 @@ fun Screen1(onNavigate: () -> Unit) {
         }
 
 
+
         Button(
             onClick = {
 
@@ -316,59 +304,70 @@ fun Screen1(onNavigate: () -> Unit) {
                 text3 = selectedProgramme
                 text4 = selectedCourse
 
-                var coursesJuhu : List<String> = listOf("")
-                var coursesChurch : List<String> = listOf("")
-                var coursesPune : List<String> = listOf("")
 
-//"Ph.D.","Master Degree","Degree","P.G.Diploma","Diploma","Certificate"
-                campuses.clear()
-                when (selectedProgramme){
-                    "Ph.D." -> {
-                        coursesJuhu = JuhuCampus.phdList
-                        coursesChurch = ChurchCampus.phdList
-                        coursesPune = PuneCampus.phdList
+                if (name.value.text.isNotEmpty() and contactNum.value.text.isNotEmpty() and selectedProgramme.isNotEmpty()) {
+                    var coursesJuhu: List<String> = listOf("")
+                    var coursesChurch: List<String> = listOf("")
+                    var coursesPune: List<String> = listOf("")
+
+                    campuses.clear()
+                    when (selectedProgramme) {
+                        "Ph.D." -> {
+                            coursesJuhu = JuhuCampus.phdList
+                            coursesChurch = ChurchCampus.phdList
+                            coursesPune = PuneCampus.phdList
+                        }
+
+                        "Master Degree" -> {
+                            coursesJuhu = JuhuCampus.masterList
+                            coursesChurch = ChurchCampus.masterList
+                            coursesPune = PuneCampus.masterList
+                        }
+
+                        "Degree" -> {
+                            coursesJuhu = JuhuCampus.degreeList
+                            coursesChurch = ChurchCampus.degreeList
+                            coursesPune = PuneCampus.degreeList
+                        }
+
+                        "P.G.Diploma" -> {
+                            coursesJuhu = JuhuCampus.pgdList
+                            coursesChurch = ChurchCampus.pgdList
+                            coursesPune = PuneCampus.pgdList
+                        }
+
+                        "Diploma" -> {
+                            coursesJuhu = JuhuCampus.diplomaList
+                            coursesChurch = ChurchCampus.diplomaList
+                            coursesPune = PuneCampus.diplomaList
+                        }
+
+                        "Certificate" -> {
+                            coursesJuhu = JuhuCampus.certList
+                            coursesChurch = ChurchCampus.certList
+                            coursesPune = PuneCampus.certList
+                        }
+
                     }
-                    "Master Degree" -> {
-                        coursesJuhu = JuhuCampus.masterList
-                        coursesChurch = ChurchCampus.masterList
-                        coursesPune = PuneCampus.masterList
+
+                    if (selectedCourse in coursesJuhu) {
+                        campuses.add(JuhuCampus)
                     }
-                    "Degree" -> {
-                        coursesJuhu = JuhuCampus.degreeList
-                        coursesChurch = ChurchCampus.degreeList
-                        coursesPune = PuneCampus.degreeList
+                    if (selectedCourse in coursesChurch) {
+                        campuses.add(ChurchCampus)
                     }
-                    "P.G.Diploma" -> {
-                        coursesJuhu = JuhuCampus.pgdList
-                        coursesChurch = ChurchCampus.pgdList
-                        coursesPune = PuneCampus.pgdList
+                    if (selectedCourse in coursesPune) {
+                        campuses.add(PuneCampus)
                     }
-                    "Diploma" -> {
-                        coursesJuhu = JuhuCampus.diplomaList
-                        coursesChurch = ChurchCampus.diplomaList
-                        coursesPune = PuneCampus.diplomaList
-                    }
-                    "Certificate" -> {
-                        coursesJuhu = JuhuCampus.certList
-                        coursesChurch = ChurchCampus.certList
-                        coursesPune = PuneCampus.certList
-                    }
+
+
+                    saveDataToFirebase(text1, text2, text3, text4)
+                    onNavigate()
+                }
+                else {
+                    Toast.makeText(context, "Please make sure that the fields aren't empty", Toast.LENGTH_SHORT).show()
 
                 }
-
-                if (selectedCourse in coursesJuhu) {
-                    campuses.add(JuhuCampus)
-                }
-                if (selectedCourse in coursesChurch) {
-                    campuses.add(ChurchCampus)
-                }
-                if (selectedCourse in coursesPune) {
-                    campuses.add(PuneCampus)
-                }
-
-
-                saveDataToFirebase(text1, text2, text3, text4)
-                onNavigate()
             },
             modifier = Modifier.padding(top = 30.dp),
             colors = ButtonDefaults.buttonColors(Color(0, 0, 153))
@@ -477,6 +476,6 @@ fun Screen2(onBack: () -> Unit ) {
 @Composable
 fun GreetingPreview() {
     StudentFormTheme {
-        Screen2 {}
+        Screen1 {}
     }
 }
