@@ -154,7 +154,7 @@ val diplomaJuhu : List<String> = listOf("")
 
 
 
-data class campusClass(
+data class CampusClass(
     val name: String,
     val contactNum: String,
     val address: String,
@@ -166,7 +166,7 @@ data class campusClass(
     val pgdList : List<String> ,
     val certList : List<String>)
 
-val JuhuCampus = campusClass ("Juhu Campus" ,
+val JuhuCampus = CampusClass ("Juhu Campus" ,
     "+91-22-2660-8855",
     "SNDT Women’s University\n" +
             "Juhu Campus, Sir Vithaldas\n" +
@@ -182,7 +182,7 @@ val JuhuCampus = campusClass ("Juhu Campus" ,
     certJuhu
 )
 
-val ChurchCampus = campusClass ("Churchgate Campus" ,
+val ChurchCampus = CampusClass ("Churchgate Campus" ,
     "+91-22-22052970",
     "SNDT Women's University,\n" +
             "6th flr, Patkar Hall bldg,\n" +
@@ -196,7 +196,7 @@ val ChurchCampus = campusClass ("Churchgate Campus" ,
     pgdChurchgate,
     certChurchgate)
 
-val PuneCampus = campusClass ("Pune Campus" ,
+val PuneCampus = CampusClass ("Pune Campus" ,
     "+91-22-22052970",
     "P.G.S.R SNDT Woman’s University,\n" +
             "Maharshi Karve Vidyavihar,\n" +
@@ -210,3 +210,14 @@ val PuneCampus = campusClass ("Pune Campus" ,
     pgdPune,
     certPune
 )
+
+
+val programmes = listOf("Ph.D.","Master Degree","Degree","P.G.Diploma","Diploma","Certificate")
+
+
+val phdProgrammes = phdChurchgate.union(phdJuhu).union(phdPune).distinct().sorted()
+val bachelorProgrammes = bachelorChurchgate.union(bachelorJuhu).union(bachelorPune).distinct().sorted()
+val masterProgrammes = masterChurchgate.union(masterJuhu).union(masterPune).distinct().sorted()
+val pgdProgrammes = pgdChurchgate.union(pgdJuhu).union(pgdPune).distinct().sorted()
+val certProgrammes = certChurchgate.union(certJuhu).union(certPune).distinct().sorted()
+val diplomaProgrammes = diplomaChurchgate.union(diplomaJuhu).union(diplomaPune).distinct().sorted()
